@@ -1,7 +1,7 @@
 ---
 title: "Journal (reproducible report)"
 author: "Pawin Traitrongsat"
-date: "2020-11-29"
+date: "2020-11-28"
 output:
   html_document:
     toc: true
