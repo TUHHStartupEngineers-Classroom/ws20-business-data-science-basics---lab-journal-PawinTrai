@@ -149,22 +149,19 @@ sales_by_ly_tbl %>%
 
 Last compiled: `r Sys.Date()`
 
-## Challange 1.1
+## Challange 2.1
 sssss```{r, fig.width=10, fig.height=7}
 
 
 
 
-# Challang3
+# Challange 3
 
 Last compiled: `r Sys.Date()`
 
 
-# Challange4
+# Challange 4
 
 Last compiled: `r Sys.Date()`
 
 
-# Challange2
-
-Last compiled: `r Sys.Date()`
