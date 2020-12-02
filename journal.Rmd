@@ -20,13 +20,11 @@ knitr::opts_chunk$set(message=FALSE,warning=FALSE, cache=TRUE)
 
 This is an `.Rmd` file. It is plain text with special features. Any time you write just like this, it will be compiled to normal text in the website. If you put a \# in front of your text, it will create a top level-header.
 
-# Challange1
+# Challange 1
 
 Last compiled: `r Sys.Date()`
 
-Notice that whatever you define as a top level header, automatically gets put into the table of contents bar on the left. 
-
-## Challange1.1
+## Challange 1.1
 ```{r, fig.width=10, fig.height=7}
 library(tidyverse)
 library(readxl)
@@ -88,25 +86,85 @@ sales_by_cs_tbl %>%
 ```
 
 
-## Challange1.2
+## Challange 1.2
+```{r, fig.width=10, fig.height=7}
+library(tidyverse)
+library(readxl)
+library(lubridate)
+library("writexl")
 
-Here's an even lower level header
+bikes_tbl      <- read_excel(path = "00_data/01_bike_sales/01_raw_data/bikes.xlsx")
+orderlines_tbl <- read_excel("00_data/01_bike_sales/01_raw_data/orderlines.xlsx")
+bikeshops_tbl  <- read_excel("00_data/01_bike_sales/01_raw_data/bikeshops.xlsx")
 
-# My second post (note the order)
+bike_orderlines_joined_tbl <- orderlines_tbl %>%
+        left_join(bikes_tbl, by = c("product.id" = "bike.id")) %>%
+        left_join(bikeshops_tbl, by = c("customer.id" = "bikeshop.id"))
+        
+bike_orderlines_wrangled_tbl <- bike_orderlines_joined_tbl %>%
+ separate(col    = category,
+           into   = c("category.1", "category.2", "category.3"),
+           sep    = " - ") %>%
+  mutate(total.price = price * quantity) %>%
+  select(-...1, -gender) %>%
+  select(-ends_with(".id")) %>%
+  bind_cols(bike_orderlines_joined_tbl %>% select(order.id)) %>% 
+  select(order.id, contains("order"), contains("model"), contains("category"),
+         price, quantity, total.price,
+         everything()) %>%
+  rename(bikeshop = name) %>%
+  set_names(names(.) %>% str_replace_all("\\.", "_"))
+
+sales_by_ly_tbl <- bike_orderlines_wrangled_cs_tbl %>%
+  select(order_date, state, city, total_price) %>%
+  mutate(year = year(order_date)) %>%
+  group_by(state, year) %>%
+  summarise(sales = sum(total_price)) %>%
+  ungroup() %>%
+  mutate(sales_text = scales::dollar(sales, big.mark = ".", 
+                                     decimal.mark = ",", 
+                                     prefix = "", 
+                                     suffix = " €"))  
+
+sales_by_ly_tbl %>%
+  ggplot(aes(x = year, y = sales, fill = state)) +
+  geom_col() +
+  facet_wrap(~ state) +
+  scale_y_continuous(labels = scales::dollar_format(big.mark = ".", 
+                                                    decimal.mark = ",", 
+                                                    prefix = "", 
+                                                    suffix = " €")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs( title = "Revenue by year and state",
+        subtitle = "",
+        fill = "State" # Changes the legend name
+        )
+```
+
+
+
+
+
+# Challange 2
 
 Last compiled: `r Sys.Date()`
 
-I'm writing this tutorial going from the top down. And, this is how it will be printed. So, notice the second post is second in the list. If you want your most recent post to be at the top, then make a new post starting at the top. If you want the oldest first, do, then keep adding to the bottom
+## Challange 1.1
+sssss```{r, fig.width=10, fig.height=7}
 
-# Adding R stuff
 
-So far this is just a blog where you can write in plain text and serve your writing to a webpage. One of the main purposes of this lab journal is to record your progress learning R. The reason I am asking you to use this process is because you can both make a website, and a lab journal, and learn R all in R-studio. This makes everything really convenient and in the same place. 
 
-So, let's say you are learning how to make a histogram in R. For example, maybe you want to sample 100 numbers from a normal distribution with mean = 0, and standard deviation = 1, and then you want to plot a histogram. You can do this right here by using an r code block, like this:
 
-```{r}
-samples <- rnorm(100, mean=0, sd=1)
-hist(samples)
-```
+# Challang3
 
-When you knit this R Markdown document, you will see that the histogram is printed to the page, along with the R code. This document can be set up to hide the R code in the webpage, just delete the comment (hashtag) from the cold folding option in the yaml header up top. For purposes of letting yourself see the code, and me see the code, best to keep it the way that it is. You'll learn that all of these things and more can be customized in each R code block.
+Last compiled: `r Sys.Date()`
+
+
+# Challange4
+
+Last compiled: `r Sys.Date()`
+
+
+# Challange2
+
+Last compiled: `r Sys.Date()`
