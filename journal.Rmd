@@ -147,13 +147,40 @@ sales_by_ly_tbl %>%
 
 # Challange 2
 
-Last compiled: `r Sys.Date()`
-
 ## Challange 2.1
-sssss```{r, fig.width=10, fig.height=7}
+Find "Seoul city" location and flight from Berlin to Seoul by using "rflights" package
+```{r, fig.width=10, fig.height=7}
+library("rflights")
 
+#Find Seoul location
+Seoul_find <- find_location("seoul", 
+              location_types = c("city", "airport"))
+    
+lapply(Seoul_find, function(act_loc) {
+  c(act_loc$name, act_loc$country$name, act_loc$region$name)
+})
 
+```
 
+```{r, fig.width=10, fig.height=7}
+
+#Find flight from Berlin to Seoul
+Seoul_id <- find_location("seoul", "city")[[1]]$id
+berlin_id <- find_location("berlin", "city")[[1]]$id
+id <- c(Seoul_id, hamburg_id)
+id
+```
+
+```{r, fig.width=10, fig.height=7}
+flights <- get_flights(fly_from = "berlin_de" , fly_to = "seoul_kr" , date_from = "09/10/2021",
+  date_to = "19/10/2021" 
+  )
+  
+length(flights)
+head(t(sapply(flights, function(x) c(price = x$price, city_to = x$cityTo, duration = x$fly_duration, distance = x$distance))), n = 10)
+```
+
+## Challange 2.2
 
 # Challange 3
 
