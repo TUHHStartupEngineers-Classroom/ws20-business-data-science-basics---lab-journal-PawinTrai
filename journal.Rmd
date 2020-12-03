@@ -182,6 +182,41 @@ head(t(sapply(flights, function(x) c(price = x$price, city_to = x$cityTo, durati
 
 ## Challange 2.2
 
+Database of competitor websites (https://www.rosebikes.de/)
+```{r, fig.width=10, fig.height=7}
+library(tidyverse) # Main Package - Loads dplyr, purrr, etc.
+library(rvest)     # HTML Hacking & Web Scraping
+library(xopen)     # Quickly opening URLs
+library(jsonlite)  # converts JSON files to R objects
+library(glue)      # concatenate strings
+library(stringi)   # character string/text processing
+
+html_mtb <- read_html("https://www.rosebikes.de/fahrr%C3%A4der/mtb")
+
+bike_tbl <- html_mtb %>%
+  html_nodes(css = ".catalog-category-bikes__title-text") %>%
+  html_text() %>% 
+  stringr::str_replace_all(pattern = "\n", replacement = "") %>% 
+  enframe(name = "No.", value = "bike_model")
+
+
+price_tbl <- html_mtb %>%
+  html_nodes(css = ".catalog-category-bikes__price-title") %>%
+  html_text() %>%
+  stringr::str_replace_all(pattern = "\nab ", replacement = "") %>%
+  stringr::str_replace_all(pattern = "\n", replacement = "") %>%
+  stringr::str_replace_all(pattern = "\200", replacement = "") %>%
+  stringr::str_replace_all(pattern = ",00", replacement = "") %>%
+  str_remove_all(pattern = "\\.")  %>%
+  readr::parse_number() %>%
+  enframe(name = "No.", value = "price")
+
+left_join(bike_tbl,price_tbl)
+```
+
+
+
+
 # Challange 3
 
 Last compiled: `r Sys.Date()`
