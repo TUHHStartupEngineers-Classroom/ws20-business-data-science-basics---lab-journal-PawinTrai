@@ -1,77 +1,58 @@
-1+7
-5+5
-10*10
-1:100
+library(tidyverse) # Main Package - Loads dplyr, purrr, etc.
+library(rvest)     # HTML Hacking & Web Scraping
+library(xopen)     # Quickly opening URLs
+library(jsonlite)  # converts JSON files to R objects
+library(glue)      # concatenate strings
+library(stringi)
 
-sqrt((2 * 1000 * 5) / 0.25)
+library(readxl)
+library(lubridate)
+library("writexl")
 
-Q <- 200
-die <- 1:6
 
-D <- 1000
-K <- 5
-h <- 0.25
-sqrt(2 * D * K / h)
+bikes_tbl <- read_excel("00_data/01_bike_sales/01_raw_data/bikes.xlsx") %>%
+ 
+  separate(col    = category,
+           into   = c("category.1", "category.2", "category.3"),
+           sep    = " - ") %>%
+  
+  # Renaming columns
+  set_names(names(.) %>% str_replace_all("\\.", "_"))
+bikes_tbl %>%
+  select(1:3)
+bikes_tbl %>%
+  select(model, price)
+bikes_tbl %>%
+  select(category_1:category_3, everything())
+bikes_tbl %>%
+  relocate(category_1:category_3)
+?starts_with
+bikes_tbl %>%
+  select(starts_with("model"))
+bikes_tbl %>%
+   pull(price) %>%
+  mean()
 
-D <- 4000
-sqrt(2 * D * K / h)
+bikes_tbl %>%
+  select(where(is.character))
+bikes_tbl %>%
+  select(where(is.numeric))
+bikes_tbl %>%
+  select(!where(is.numeric))
+bikes_tbl %>%
+  select(model, category_1, category_2, category_3, price) %>% 
+  rename(
+    Model           = model,
+    `Bike Family`   = category_1,
+    `Ride Style`    = category_2,
+    `Bike Category` = category_3,
+    `Price in Euro` = price
+  )
 
-die <- 1:6
-mean(die)
-
-round(mean(die))
-
-sample(die, size = 1)
-dice <- sample(die, size = 2, replace = TRUE)
-dice
-sum(dice)
-
-roll <- function() {
-  die <- 1:6
-  dice <- sample(die, size = 2, replace = TRUE)
-  sum(dice)
-}
-roll()
-
-roll2 <- function(faces) {
-  dice <- sample(faces, size = 2, replace = TRUE)
-  sum(dice)
-}
-roll2(faces = 1:6)
-roll2(faces = 1:25)
-
-roll2 <- function(faces = 1:6) {
-  dice <- sample(faces, size = 2, replace = TRUE)
-  sum(dice)
-}
-
-roll2()
-
-roll2 <- function(faces = 1:6, number_of_dice = 2) {
-  dice <- sample(x = faces, size = number_of_dice, replace = TRUE)
-  sum(dice)
-}
-roll2()
-roll2(faces = 1:4, number_of_dice = 4)
-
-calc_EOQ <- function(D = 1000) {
-  K <- 5
-  h <- 0.25
-  Q <- sqrt(2*D*K/h)
-  Q
-}
-calc_EOQ()
-
-probabilities_vector <- c(1/6, 1/6, 1/6, 1/6, 1/6, 1/6)
-probabilities_vector
-
-roll3 <- function(faces = 1:6, number_of_dice = 1) {
-  dice <- sample(x = faces, size = number_of_dice, 
-                 replace = TRUE, 
-                 prob = c(0.1, 0.1, 0.1, 0.1, 0.1, 0.5))
-  sum(dice)
-}
-roll3(faces = 1:6, number_of_dice = 1)
-results <- replicate(n = 100, expr = roll3(), simplify=TRUE)
-hist(results)
-
+bikes_tbl %>%
+  select(model, price) %>%
+  arrange(desc(price)) %>%
+  View()
+bikes_tbl %>%
+  select(model, price) %>%
+  filter(price > mean(price))
